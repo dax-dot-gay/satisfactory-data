@@ -1,0 +1,16 @@
+{
+  "nix.enableLanguageServer": true,
+  "nix.serverPath": ["devenv", "lsp"],
+  "nix.serverSettings": {
+    "nixd": {
+      "nixpkgs": {
+        "expr": "(import /mnt/data/Programming/Rust/satisfactory-data/.devenv/bootstrap/default.nix {\n  version = \"2.0.6\";\n  is_development_version = false;\n  system = \"x86_64-linux\";\n  devenv_root = \"/mnt/data/Programming/Rust/satisfactory-data\";\n  skip_local_src = false;\n  devenv_dotfile = \"/mnt/data/Programming/Rust/satisfactory-data/.devenv\";\n  devenv_dotfile_path = ./.devenv;\n  devenv_tmpdir = \"/tmp\";\n  devenv_runtime = \"/run/user/1000/devenv-91c5fdd\";\n  devenv_istesting = false;\n  devenv_direnvrc_latest_version = 2;\n  container_name = null;\n  active_profiles = [\n  ];\n  cli_options = {\n  };\n  hostname = \"stryker\";\n  username = \"dax\";\n  git_root = \"/mnt/data/Programming/Rust/satisfactory-data\";\n  secretspec = null;\n  devenv_inputs = {\n    nixpkgs = {\n      url = \"github:cachix/devenv-nixpkgs/rolling\";\n    };\n  };\n  devenv_imports = [\n  ];\n  impure = false;\n  nixpkgs_config = {  };\n  lock_fingerprint = \"1f1ac696cf8014876c7798a5b10d2cd8566e67e99d027925760cef8f35294f13\";\n  devenv_state = null;\n}).pkgs"
+      },
+      "options": {
+        "devenv": {
+          "expr": "(import /mnt/data/Programming/Rust/satisfactory-data/.devenv/bootstrap/default.nix {\n  version = \"2.0.6\";\n  is_development_version = false;\n  system = \"x86_64-linux\";\n  devenv_root = \"/mnt/data/Programming/Rust/satisfactory-data\";\n  skip_local_src = false;\n  devenv_dotfile = \"/mnt/data/Programming/Rust/satisfactory-data/.devenv\";\n  devenv_dotfile_path = ./.devenv;\n  devenv_tmpdir = \"/tmp\";\n  devenv_runtime = \"/run/user/1000/devenv-91c5fdd\";\n  devenv_istesting = false;\n  devenv_direnvrc_latest_version = 2;\n  container_name = null;\n  active_profiles = [\n  ];\n  cli_options = {\n  };\n  hostname = \"stryker\";\n  username = \"dax\";\n  git_root = \"/mnt/data/Programming/Rust/satisfactory-data\";\n  secretspec = null;\n  devenv_inputs = {\n    nixpkgs = {\n      url = \"github:cachix/devenv-nixpkgs/rolling\";\n    };\n  };\n  devenv_imports = [\n  ];\n  impure = false;\n  nixpkgs_config = {  };\n  lock_fingerprint = \"1f1ac696cf8014876c7798a5b10d2cd8566e67e99d027925760cef8f35294f13\";\n  devenv_state = null;\n}).project.options"
+        }
+      }
+    }
+  }
+}
