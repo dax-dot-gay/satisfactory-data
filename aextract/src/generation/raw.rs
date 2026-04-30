@@ -94,6 +94,7 @@ pub fn generate_raw_data(
     );
     let parsed = parse_docs_json(options.docs_path())?;
     let generated = Generator::new(parsed).generate();
+    std::fs::write(workdir.join("docs.raw.json"), serde_json::to_string_pretty(&generated)?)?;
     generate_asset_request(generated.clone(), workdir.clone())?;
 
     info!(
