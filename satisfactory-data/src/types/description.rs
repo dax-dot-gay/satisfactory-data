@@ -29,8 +29,8 @@ pub enum DescriptionGasType {
 #[model]
 #[serde(rename_all = "snake_case", tag = "kind")]
 pub enum DescriptionPowerConsumption {
-    Static { amount: f64 },
-    Variable { min: f64, max: f64 },
+    Static { amount: f32 },
+    Variable { min: f32, max: f32 },
 }
 
 #[model]
@@ -60,15 +60,15 @@ pub struct DescriptionItem {
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub energy_value: Option<f64>,
+    pub energy_value: Option<f32>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub radioactivity: Option<f64>,
+    pub radioactivity: Option<f32>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub health_gain: Option<f64>,
+    pub health_gain: Option<f32>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
@@ -84,9 +84,9 @@ pub struct DescriptionItem {
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub generated_waste: Option<f64>,
+    pub generated_waste: Option<f32>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub resource_sink_points: Option<f64>,
+    pub resource_sink_points: Option<f32>,
 }

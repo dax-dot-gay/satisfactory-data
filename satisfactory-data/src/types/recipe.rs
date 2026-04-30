@@ -34,6 +34,6 @@ pub struct RecipeItem {
     pub display_name: String,
     pub inputs: Vec<RecipeResource>,
     pub outputs: Vec<RecipeResource>,
-    pub duration: f64,
+    pub duration: f32,
     pub machines: Vec<RecipeMachine>,
 }

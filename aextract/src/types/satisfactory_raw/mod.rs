@@ -1,10 +1,10 @@
-mod building;
-mod description;
-mod generator;
-mod recipe;
-mod research;
-mod uestring;
-mod utility;
+pub mod building;
+pub mod description;
+pub mod generator;
+pub mod recipe;
+pub mod research;
+pub mod uestring;
+pub mod utility;
 
 use std::collections::HashMap;
 
@@ -15,7 +15,7 @@ pub use description::{
 };
 pub use generator::{Generated, Generator};
 pub use recipe::RecipeItem;
-pub use research::{ResearchItem, ResearchType};
+pub use research::{ResearchItem, ResearchType, ResearchUnlock};
 use serde::{Deserialize, Serialize};
 use specta::Type;
 pub use utility::{

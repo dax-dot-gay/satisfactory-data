@@ -35,11 +35,11 @@ pub enum ResearchUnlock {
     },
     InventorySlot {
         #[serde(default, alias = "resources")]
-        slots: Vec<String>,
+        slots: u64,
     },
     ToolSlot {
         #[serde(default, alias = "amount")]
-        slots: Vec<String>,
+        slots: u64,
     },
     Emote {
         #[serde(default)]

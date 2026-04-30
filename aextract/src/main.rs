@@ -39,7 +39,9 @@ fn main() -> std::result::Result<(), Box<dyn Error>> {
         (tmd.path().to_path_buf(), Some(tmd))
     };
 
-    generation::raw::generate_raw_data(options.clone(), working_directory)?;
+    let generated = generation::raw::generate_raw_data(options.clone(), working_directory)?;
+    let cleaned = generation::cleaned::generate_clean_data(generated);
+    std::fs::write("./test.json", serde_json::to_string_pretty(&cleaned)?)?;
     Ok(())
 }
 

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::types::*;
 use satisfactory_data_macros::model;
 
-#[model]
+#[model(Default)]
 pub struct RawRegistry {
     #[serde(default)]
     pub recipes: HashMap<String, RecipeItem>,

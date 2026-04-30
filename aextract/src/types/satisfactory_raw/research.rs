@@ -106,6 +106,17 @@ pub enum ResearchType {
     ResourceSink
 }
 
+impl Into<satisfactory_data::types::research::ResearchType> for ResearchType {
+    fn into(self) -> satisfactory_data::types::research::ResearchType {
+        match self {
+            ResearchType::MamResearch => satisfactory_data::types::research::ResearchType::MamResearch,
+            ResearchType::Milestone => satisfactory_data::types::research::ResearchType::Milestone,
+            ResearchType::AlternateRecipe => satisfactory_data::types::research::ResearchType::AlternateRecipe,
+            ResearchType::ResourceSink => satisfactory_data::types::research::ResearchType::ResourceSink,
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Type)]
 pub struct ResearchItemCost {
     #[serde(alias = "ItemClass")]

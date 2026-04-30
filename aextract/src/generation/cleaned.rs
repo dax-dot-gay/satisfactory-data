@@ -1,0 +1,150 @@
+use std::fmt::Debug;
+
+use convert_case::{Case, Casing};
+use satisfactory_data::{
+    registry::RawRegistry, types as clean, types::research::ResearchUnlock as CUnlock,
+};
+use serde::{Serialize, de::DeserializeOwned};
+
+use crate::types::satisfactory_raw::{self as raw, Generated, research::ResearchUnlock as RUnlock};
+
+fn clean_id(id: impl Into<String>) -> String {
+    let mut progress = id.into();
+    progress = if progress.starts_with("Research") {
+        progress.replacen("Research", "research/", 1)
+    } else if progress.starts_with("Schematic") {
+        progress.replacen("Schematic", "research:schematic/", 1)
+    } else if progress.starts_with("Desc") {
+        progress.replacen("Desc", "desc/", 1)
+    } else if progress.starts_with("BpEquipmentDescriptor") {
+        progress.replacen("BpEquipmentDescriptor", "desc:equipment/", 1)
+    } else if progress.starts_with("BpEqDesc") {
+        progress.replacen("BpEqDesc", "desc:equipment/", 1)
+    } else if progress.starts_with("BpItemDescriptor") {
+        progress.replacen("BpItemDescriptor", "desc:equipment/", 1)
+    } else if progress.starts_with("Build") {
+        progress.replacen("Build", "build/", 1)
+    } else if progress.starts_with("Recipe") {
+        progress.replacen("Recipe", "recipe/", 1)
+    } else if progress.starts_with("Tape") {
+        progress.replacen("Tape", "special:tape/", 1)
+    } else if progress.starts_with("FgBuildableRadarTower") {
+        String::from("special:scanner/radar_tower")
+    } else if progress.starts_with("FgObjectScanner") {
+        String::from("special:scanner/object_scanner")
+    } else if progress.starts_with("CustomizerUnlock") {
+        progress.replacen("CustomizerUnlock", "special:customizer/", 1)
+    } else if progress.starts_with("Emote") {
+        progress.replacen("Emote", "special:emote/", 1)
+    } else {
+        println!("Unhandled ID format: {}", progress);
+        progress
+    };
+
+    if progress.ends_with("C'") {
+        progress.truncate(progress.len() - 2);
+    } else if progress.ends_with("C") {
+        progress.truncate(progress.len() - 1);
+    }
+
+    progress.to_case(Case::Snake)
+}
+
+fn extract_ue<T: Clone + Debug + Serialize + DeserializeOwned + PartialEq + Default>(
+    ue: raw::uestring::UE<T>,
+) -> T {
+    return AsRef::<Option<T>>::as_ref(&ue).clone().unwrap_or_default();
+}
+
+fn extract_crs(crs: raw::uestring::UE<Vec<raw::utility::ClassReference>>) -> Vec<String> {
+    return extract_ue(crs)
+        .into_iter()
+        .map(|v| clean_id(Into::<String>::into(v)))
+        .collect();
+}
+
+fn clean_research(item: raw::ResearchItem) -> clean::ResearchItem {
+    clean::ResearchItem {
+        id: clean_id(item.id.clone()),
+        display_name: item.display_name.clone(),
+        description: item.description.clone(),
+        research_type: item.research_type.clone().into(),
+        cost: match item.cost.clone() {
+            Some(items) => extract_ue(items)
+                .into_iter()
+                .map(|v| clean::research::ResearchCost {
+                    item: clean_id(Into::<String>::into(v.item)),
+                    amount: v.amount.into(),
+                })
+                .collect(),
+            None => Vec::new(),
+        },
+        unlocks: match item.unlocks.clone() {
+            Some(unlocks) => unlocks
+                .into_iter()
+                .map(|unlock| match unlock {
+                    RUnlock::Recipe { recipes } => CUnlock::Recipe {
+                        recipes: extract_crs(recipes),
+                    },
+                    RUnlock::Blueprints { .. } => CUnlock::Blueprints {},
+                    RUnlock::Schematic { schematics } => CUnlock::Schematic {
+                        schematics: extract_crs(schematics),
+                    },
+                    RUnlock::ScannableResource { resources } => CUnlock::ScannableResource {
+                        resources: extract_crs(resources),
+                    },
+                    RUnlock::ScannableObject { resources } => CUnlock::ScannableObject {
+                        objects: extract_ue(resources)
+                            .into_iter()
+                            .map(|v| clean::research::ScannableObjectType {
+                                item: clean_id(Into::<String>::into(v.item.clone())),
+                                allowed_scanners: v
+                                    .allowed_scanners
+                                    .clone()
+                                    .into_iter()
+                                    .map(|v| clean_id(Into::<String>::into(v)))
+                                    .collect(),
+                            })
+                            .collect(),
+                    },
+                    RUnlock::InventorySlot { resources } => CUnlock::InventorySlot {
+                        slots: resources.into(),
+                    },
+                    RUnlock::Info {} => CUnlock::Info {},
+                    RUnlock::BoomboxTape { tapes } => CUnlock::BoomboxTape {
+                        tapes: extract_crs(tapes),
+                    },
+                    RUnlock::ToolSlot { amount } => CUnlock::ToolSlot {
+                        slots: amount.into(),
+                    },
+                    RUnlock::Emote { emotes } => CUnlock::Emote {
+                        emotes: extract_crs(emotes),
+                    },
+                    RUnlock::ProductionBoost {} => CUnlock::ProductionBoost {},
+                    RUnlock::CentralStorageUpload { amount } => CUnlock::CentralStorageUpload {
+                        amount: amount.into(),
+                    },
+                    RUnlock::BuildEfficiency {} => CUnlock::BuildEfficiency {},
+                    RUnlock::CentralStorageItems { .. } => CUnlock::CentralStorageItems {},
+                    RUnlock::CentralStorageSlots { .. } => CUnlock::CentralStorageSlots {},
+                    RUnlock::Overclocking {} => CUnlock::Overclocking {},
+                    RUnlock::Map {} => CUnlock::Map {},
+                })
+                .collect(),
+            None => Vec::new(),
+        },
+        tier: item.tier.and_then(|v| Some(v.into())).unwrap_or(0),
+    }
+}
+
+pub fn generate_clean_data(data: Generated) -> RawRegistry {
+    let mut registry = RawRegistry::default();
+    registry.research = data
+        .research
+        .clone()
+        .into_iter()
+        .map(|(id, item)| (clean_id(id), clean_research(item)))
+        .collect();
+
+    registry
+}

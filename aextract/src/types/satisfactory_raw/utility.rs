@@ -114,6 +114,26 @@ impl Into<String> for Coercion {
     }
 }
 
+impl Into<u64> for Coercion {
+    fn into(self) -> u64 {
+        match self {
+            Coercion::Float(v) => v as u64,
+            Coercion::Integer(v) => v as u64,
+            _ => 0
+        }
+    }
+}
+
+impl Into<f64> for Coercion {
+    fn into(self) -> f64 {
+        match self {
+            Coercion::Float(v) => v as f64,
+            Coercion::Integer(v) => v as f64,
+            _ => 0.0
+        }
+    }
+}
+
 #[derive(Serialize, Clone, Debug, PartialEq, Type)]
 pub struct IconPath(Option<String>);
 

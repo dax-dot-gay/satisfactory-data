@@ -14,7 +14,7 @@ pub struct BuildableFuelType {
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub byproduct_amount: Option<f64>,
+    pub byproduct_amount: Option<f32>,
 }
 
 #[model]
@@ -32,27 +32,27 @@ pub struct BuildableItem {
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub power_production: Option<f64>,
+    pub power_production: Option<f32>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub power_consumption: Option<f64>,
+    pub power_consumption: Option<f32>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub power_consumption_exponent: Option<f64>,
+    pub power_consumption_exponent: Option<f32>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub power_consumption_boost: Option<f64>,
+    pub power_consumption_boost: Option<f32>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub power_consumption_minimum: Option<f64>,
+    pub power_consumption_minimum: Option<f32>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub power_consumption_maximum: Option<f64>,
+    pub power_consumption_maximum: Option<f32>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
