@@ -100,22 +100,31 @@ pub fn generate_raw_data(
         "Unpacking binaries to {}",
         workdir.to_string_lossy().to_string()
     );
-    let ((exe_filename, exe_content), (lib_filename, lib_content)) = binaries();
-    fs::write(workdir.join(exe_filename.clone()), exe_content)?;
-    fs::write(workdir.join(lib_filename.clone()), lib_content)?;
+    let Binaries { executable, oodle, skiasharp, libblake } = binaries();
+    fs::write(workdir.join(executable.name()), executable.bytes())?;
+    fs::write(workdir.join(oodle.name()), oodle.bytes())?;
+    fs::write(workdir.join(skiasharp.name()), skiasharp.bytes())?;
+    fs::write(workdir.join(libblake.name()), libblake.bytes())?;
 
-    info!("Executing {exe_filename} & {lib_filename}");
 
     #[cfg(unix)]
     {
         info!("Setting binary perms...");
-        let mut exe_perms = fs::metadata(workdir.join(exe_filename.clone()))?.permissions();
+        let mut exe_perms = fs::metadata(workdir.join(executable.name()))?.permissions();
         exe_perms.set_mode(0o777);
-        fs::set_permissions(workdir.join(exe_filename.clone()), exe_perms)?;
+        fs::set_permissions(workdir.join(executable.name()), exe_perms)?;
 
-        let mut lib_perms = fs::metadata(workdir.join(lib_filename.clone()))?.permissions();
+        let mut lib_perms = fs::metadata(workdir.join(oodle.name()))?.permissions();
         lib_perms.set_mode(0o777);
-        fs::set_permissions(workdir.join(lib_filename.clone()), lib_perms)?;
+        fs::set_permissions(workdir.join(oodle.name()), lib_perms)?;
+
+        let mut lib_perms = fs::metadata(workdir.join(skiasharp.name()))?.permissions();
+        lib_perms.set_mode(0o777);
+        fs::set_permissions(workdir.join(skiasharp.name()), lib_perms)?;
+
+        let mut lib_perms = fs::metadata(workdir.join(libblake.name()))?.permissions();
+        lib_perms.set_mode(0o777);
+        fs::set_permissions(workdir.join(libblake.name()), lib_perms)?;
     }
 
     let _paks = options.paks_path();
@@ -125,42 +134,39 @@ pub fn generate_raw_data(
         info!(
             "Calling sidecar in FHS: steam-run -a AExSidecar {} {} {} {} {}",
             PathBuf::from(".")
-                .join(exe_filename.clone())
+                .join(executable.name())
                 .to_str()
                 .unwrap(),
             _paks.to_str().unwrap(),
             _comr.to_str().unwrap(),
             "asset_req.txt",
-            lib_filename.as_str()
+            oodle.name()
         );
         cmd!(
             "steam-run",
             "-a",
             "AExSidecar",
-            PathBuf::from(".").join(exe_filename.clone()),
+            PathBuf::from(".").join(executable.name()),
             _paks.to_str().unwrap(),
             _comr.to_str().unwrap(),
             "asset_req.txt",
-            lib_filename.as_str()
+            oodle.name()
         )
     } else {
         info!(
             "Calling sidecar: {} {} {} {} {}",
-            PathBuf::from(".")
-                .join(exe_filename.clone())
-                .to_str()
-                .unwrap(),
+            executable.name(),
             _paks.to_str().unwrap(),
             _comr.to_str().unwrap(),
             "asset_req.txt",
-            lib_filename.as_str()
+            oodle.name()
         );
         cmd!(
-            PathBuf::from(".").join(exe_filename.clone()),
+            workdir.join(executable.name()).to_str().unwrap(),
             _paks.to_str().unwrap(),
             _comr.to_str().unwrap(),
             "asset_req.txt",
-            lib_filename.as_str()
+            oodle.name()
         )
     };
     let sidecar = sidecar.dir(workdir.clone());

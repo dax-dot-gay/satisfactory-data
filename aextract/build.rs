@@ -18,6 +18,8 @@ struct Platform {
     pub dylib: String,
     pub runtime: String,
     pub executable: String,
+    pub skiasharp: String,
+    pub libblake: String
 }
 
 impl Platform {
@@ -26,12 +28,16 @@ impl Platform {
         dylib: impl AsRef<str>,
         runtime: impl AsRef<str>,
         executable: impl AsRef<str>,
+        skiasharp: impl AsRef<str>,
+        libblake: impl AsRef<str>
     ) -> Self {
         Self {
             id: id.as_ref().to_string(),
             dylib: dylib.as_ref().to_string(),
             runtime: runtime.as_ref().to_string(),
             executable: executable.as_ref().to_string(),
+            skiasharp: skiasharp.as_ref().to_string(),
+            libblake: libblake.as_ref().to_string()
         }
     }
 
@@ -132,20 +138,64 @@ impl Platform {
         let id = self.id.clone();
         let exe_name = self.executable.clone();
         let dylib_name = self.lib_filename();
+        let skiasharp = self.skiasharp.clone();
+        let libblake = self.libblake.clone();
 
         let tokens = quote! {
             #[cfg(target_family = "unix")]
             const EXECUTABLE: &'static [u8] = include_bytes!(concat!(env!("OUT_DIR"), "/binaries/", #id, "/", #exe_name));
             #[cfg(target_family = "unix")]
-            const DYLIB: &'static [u8] = include_bytes!(concat!(env!("OUT_DIR"), "/shared_libs/", #dylib_name));
+            const OODLE: &'static [u8] = include_bytes!(concat!(env!("OUT_DIR"), "/shared_libs/", #dylib_name));
+            #[cfg(target_family = "unix")]
+            const SKIASHARP: &'static [u8] = include_bytes!(concat!(env!("OUT_DIR"), "/binaries/", #id, "/", #skiasharp));
+            #[cfg(target_family = "unix")]
+            const LIBBLAKE: &'static [u8] = include_bytes!(concat!(env!("OUT_DIR"), "/binaries/", #id, "/", #libblake));
 
             #[cfg(target_family = "windows")]
             const EXECUTABLE: &'static [u8] = include_bytes!(concat!(env!("OUT_DIR"), "\\binaries\\", #id, "\\", #exe_name));
             #[cfg(target_family = "windows")]
-            const DYLIB: &'static [u8] = include_bytes!(concat!(env!("OUT_DIR"), "\\shared_libs\\", #dylib_name));
+            const OODLE: &'static [u8] = include_bytes!(concat!(env!("OUT_DIR"), "\\shared_libs\\", #dylib_name));
+            #[cfg(target_family = "windows")]
+            const SKIASHARP: &'static [u8] = include_bytes!(concat!(env!("OUT_DIR"), "\\binaries\\", #id, "\\", #skiasharp));
+            #[cfg(target_family = "windows")]
+            const LIBBLAKE: &'static [u8] = include_bytes!(concat!(env!("OUT_DIR"), "\\binaries\\", #id, "\\", #libblake));
 
-            pub fn binaries() -> ((String, &'static [u8]), (String, &'static [u8])) {
-                ((String::from(#exe_name), EXECUTABLE), (String::from(#dylib_name), DYLIB))
+            #[derive(Clone, Debug)]
+            pub struct BinaryItem {
+                name: String,
+                bytes: Vec<u8>
+            }
+
+            impl BinaryItem {
+                pub(self) fn new(name: impl AsRef<str>, bytes: &'static [u8]) -> Self {
+                    Self {
+                        name: name.as_ref().to_string(),
+                        bytes: bytes.to_vec()
+                    }
+                }
+                pub fn name(&self) -> String {
+                    self.name.clone()
+                }
+                pub fn bytes(&self) -> Vec<u8> {
+                    self.bytes.clone()
+                }
+            }
+
+            #[derive(Clone, Debug)]
+            pub struct Binaries {
+                pub executable: BinaryItem,
+                pub oodle: BinaryItem,
+                pub skiasharp: BinaryItem,
+                pub libblake: BinaryItem
+            }
+
+            pub fn binaries() -> Binaries {
+                Binaries {
+                    executable: BinaryItem::new(#exe_name, EXECUTABLE),
+                    oodle: BinaryItem::new(#dylib_name, OODLE),
+                    skiasharp: BinaryItem::new(#skiasharp, SKIASHARP),
+                    libblake: BinaryItem::new(#libblake, LIBBLAKE)
+                }
             }
         };
         let tree: syn::File = syn::parse2(tokens).unwrap();
@@ -167,6 +217,8 @@ fn get_platforms() -> Vec<Platform> {
         "linux/lib/liboo2corelinux64.so.9",
         "linux-x64",
         "AExSidecar",
+        "libSkiaSharp.so",
+        "libblake3_dotnet.so"
     ));
 
     #[cfg(all(target_os = "linux", target_arch = "aarch64"))]
@@ -175,6 +227,8 @@ fn get_platforms() -> Vec<Platform> {
         "linuxarm/lib/liboo2corelinuxarm64.so.9",
         "linux-arm64",
         "AExSidecar",
+        "libSkiaSharp.so",
+        "libblake3_dotnet.so"
     ));
 
     #[cfg(all(target_os = "windows", target_arch = "x86_64"))]
@@ -183,6 +237,8 @@ fn get_platforms() -> Vec<Platform> {
         "win/redist/oo2core_9_win64.dll",
         "win-x64",
         "AExSidecar.exe",
+        "libSkiaSharp.dll",
+        "libblake3_dotnet.dll"
     ));
 
     #[cfg(all(target_os = "macos", target_arch = "x86_64"))]
@@ -191,6 +247,8 @@ fn get_platforms() -> Vec<Platform> {
         "mac/lib/liboo2coremac64.2.9.10.dylib",
         "osx-x64",
         "AExSidecar",
+        "libSkiaSharp.dylib",
+        "libblake3_dotnet.dylib"
     ));
 
     if platforms.len() == 0 {
