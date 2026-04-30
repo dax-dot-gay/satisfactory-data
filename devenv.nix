@@ -15,5 +15,6 @@
     pkgs.git
     pkgs.cargo-autoinherit
     pkgs.openssl
+    pkgs.steam-run
   ];
 }

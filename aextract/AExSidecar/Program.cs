@@ -21,7 +21,7 @@ static class AExtract
         OodleHelper.Initialize(Path.GetFullPath(OodleLib));
 
         using StreamReader r = new(Path.Join(CommunityDirectory, "CustomVersions.json"));
-        string json = Encoding.UTF8.GetString(Encoding.Default.GetBytes(r.ReadToEnd()));
+        string json = Encoding.Unicode.GetString(Encoding.Default.GetBytes(r.ReadToEnd()));
         Console.WriteLine(json);
         List<FCustomVersion>? versions = JsonConvert.DeserializeObject<List<FCustomVersion>>(json);
 

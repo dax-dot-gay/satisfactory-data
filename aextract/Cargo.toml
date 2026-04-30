@@ -5,10 +5,21 @@ edition = "2024"
 
 [dependencies]
 clap = { version = "4.6.1", features = ["derive", "cargo"] }
+clap-verbosity-flag = "3.0.4"
+convert_case = "0.11.0"
+duct = "1.1.1"
+fern = { version = "0.7.1", features = ["colored"] }
+glob = "0.3.3"
+log = "0.4.29"
 satisfactory-data.workspace = true
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
+specta = "1.0.5"
+strip_bom = "1.0.0"
+tempfile = "3.27.0"
+thiserror = "2.0.18"
 walkdir = "2.5.0"
+zip = { version = "8.6.0", features = ["bzip2"] }
 
 [build-dependencies]
 prettyplease = "0.2.32"
