@@ -2,6 +2,13 @@
 name = "satisfactory-data"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
+description = "Rust crate and associated binary tool to extract and parse Satisfactory game files"
+homepage = "https://github.com/dax-dot-gay/satisfactory-data"
+repository = "https://github.com/dax-dot-gay/satisfactory-data"
+keywords = ["satisfactory", "serde", "specta", "gaming"]
+categories = ["parsing", "command-line-utilities"]
+readme = "../README.md"
 
 [dependencies]
 convert_case = "0.11.0"
