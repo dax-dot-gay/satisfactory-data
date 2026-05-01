@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["aextract", "satisfactory-data", "satisfactory-data-macros"]
+members = ["aextract", "satisfactory-data", "satisfactory-data-macros", "scratchpad"]
 
 [workspace.dependencies]
 satisfactory-data = {version = "*", path = "./satisfactory-data"}

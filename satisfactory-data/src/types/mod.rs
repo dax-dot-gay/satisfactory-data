@@ -1,3 +1,6 @@
+//! Contains documentation types and a strongly-typed ID type.
+#![allow(missing_docs)]
+
 pub mod research;
 pub use research::ResearchItem;
 

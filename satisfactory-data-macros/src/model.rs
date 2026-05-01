@@ -12,16 +12,18 @@ pub fn model_impl(args: TokenStream, input: TokenStream) -> manyhow::Result<Toke
         ))?;
     }
     let mut args = Punctuated::<Path, Token![,]>::parse_terminated.parse2(args)?;
-    args.push(syn::parse_str::<Path>("serde::Serialize")?);
-    args.push(syn::parse_str::<Path>("serde::Deserialize")?);
+    args.push(syn::parse_str::<Path>("crate::serde::Serialize")?);
+    args.push(syn::parse_str::<Path>("crate::serde::Deserialize")?);
     args.push(syn::parse_str::<Path>("Clone")?);
     args.push(syn::parse_str::<Path>("Debug")?);
 
     Ok(quote! {
-        #[cfg_attr(feature = "specta-1", derive(specta_01::Type))]
-        #[cfg_attr(feature = "specta-1", specta(crate = specta_01))]
-        #[cfg_attr(feature = "specta-2", derive(specta_02::Type))]
-        #[cfg_attr(feature = "specta-2", specta(crate = specta_02))]
+        #[cfg_attr(feature = "specta-1", derive(crate::specta::Type))]
+        #[cfg_attr(feature = "specta-1", specta(crate = crate::specta))]
+        #[cfg_attr(feature = "specta-2", derive(crate::specta::Type))]
+        #[cfg_attr(feature = "specta-2", specta(crate = crate::specta))]
+        #[cfg_attr(feature = "schemars", derive(crate::schemars::JsonSchema))]
+        #[cfg_attr(feature = "schemars", schemars(crate = "crate::schemars"))]
         #[derive(#args)]
         #input
     })

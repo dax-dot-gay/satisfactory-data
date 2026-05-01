@@ -1,6 +1,8 @@
 use thiserror::Error;
 
+/// Library-specific error type
 #[derive(Debug, Error)]
+#[allow(missing_docs)]
 pub enum Error {
     #[error("Unexpected error: {0:?}")]
     Unknown(#[from] anyhow::Error),
@@ -36,6 +38,7 @@ pub enum Error {
     RegistryExtractMismatch(String)
 }
 
+#[allow(missing_docs)]
 impl Error {
     pub fn invalid_id(id: impl Into<String>) -> Self {
         Self::InvalidId(id.into())

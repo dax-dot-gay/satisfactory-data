@@ -28,9 +28,11 @@ reqwest = { version = "0.13.3", features = ["json", "stream", "blocking"] }
 log = { version = "0.4.29", features = ["serde", "std"] }
 tokio = { version = "1.52.1", features = ["rt"], optional = true }
 glob = "0.3.3"
+schemars = { version = "1.2.1", features = ["std", "derive", "chrono04"], optional = true }
 
 [features]
 default = []
 async = ["dep:tokio"]
 specta-1 = ["dep:specta_01"]
 specta-2 = ["dep:specta_02"]
+schemars = ["dep:schemars"]

@@ -1,3 +1,5 @@
+//! This module contains the [Registry] and [RegistryItem] structs, which are the primary interfaces to the documentation data.
+
 use std::{
     collections::HashMap,
     io::Write,
@@ -12,26 +14,38 @@ use parking_lot::RwLock;
 use satisfactory_data_macros::model;
 use tempfile::{TempDir, tempfile};
 
+/// Registry metadata
 #[model(Default)]
 pub struct RegistryMeta {
+    /// When this registry was generated with aextract
     pub generated: chrono::DateTime<Utc>,
+
+    /// Associated Satisfactory version
     pub game_version: String,
+
+    /// Whether the version is experimental
     pub experimental: bool,
 }
 
+/// A serializable representation of the [Registry]'s data.
 #[model(Default)]
 pub struct RawRegistry {
+    /// Registry metadata
     pub metadata: RegistryMeta,
 
+    /// Mapping of string IDs to [RecipeItem]
     #[serde(default)]
     pub recipes: HashMap<String, RecipeItem>,
 
+    /// Mapping of string IDs to [ResearchItem]
     #[serde(default)]
     pub research: HashMap<String, ResearchItem>,
-
+    
+    /// Mapping of string IDs to [DescriptionItem]
     #[serde(default)]
     pub descriptions: HashMap<String, DescriptionItem>,
 
+    /// Mapping of string IDs to [Buildable]
     #[serde(default)]
     pub buildables: HashMap<String, BuildableItem>,
 }
@@ -65,7 +79,9 @@ impl RegistryHandle {
     }
 }
 
+/// Where the registry is sourced from, helps to determine mutability
 #[model]
+#[allow(missing_docs)]
 #[serde(rename_all = "snake_case", tag = "kind")]
 pub enum RegistryReference {
     Archive { source: PathBuf },
@@ -73,9 +89,13 @@ pub enum RegistryReference {
     Persisted { path: PathBuf },
 }
 
+/// Tagged union of registry items
 #[model]
 #[serde(rename_all = "snake_case", tag = "kind")]
+#[allow(missing_docs)]
 pub enum RegistryItem {
+    /// Special items (id = `special:<type>/<name>`) are items referenced in other items, but never actually described.
+    /// This variant is essentially a placeholder, and does not exist in the registry itself.
     Special { id: Id },
     Buildable { buildable: BuildableItem },
     Description {description: DescriptionItem},
@@ -83,7 +103,9 @@ pub enum RegistryItem {
     Research {research: ResearchItem}
 }
 
+#[allow(missing_docs)]
 impl RegistryItem {
+    /// Get the [Id] of this item
     pub fn id(&self) -> Id {
         match self {
             RegistryItem::Special { id } => id.clone(),
@@ -200,14 +222,14 @@ impl TryFrom<RegistryItem> for ResearchItem {
 }
 
 /// The main interface to this crate, holding a map of generated data and a handle to a tempdir containing extracted assets
-///
 #[derive(Clone, Debug)]
 pub struct Registry {
     raw: Arc<RwLock<RawRegistry>>,
     asset_pack: Arc<RegistryHandle>,
 }
 
-/// Getters
+// Getters
+#[allow(missing_docs)]
 impl Registry {
     pub fn get_raw(&self) -> RawRegistry {
         self.raw.read().clone()
@@ -225,6 +247,7 @@ impl Registry {
         self.asset_pack.path()
     }
 
+    /// Returns a [RegistryItem] from an [Id], automatically determining the correct item to fetch.
     pub fn get_item(&self, id: impl AsRef<str>) -> crate::Result<Option<RegistryItem>> {
         let id = Id::try_from(id.as_ref().to_string())?;
         let raw = self.raw.read();
@@ -268,6 +291,7 @@ impl Registry {
         }
     }
 
+    /// Whether this registry is mutable
     pub fn is_mutable(&self) -> bool {
         if let RegistryReference::Persisted { .. } = self.get_registry_reference() {
             true
@@ -276,6 +300,8 @@ impl Registry {
         }
     }
 
+    /// Inserts a [RegistryItem] into the correct map
+    /// Attempting to insert a [`RegistryItem::Special`] is a no-op
     pub fn insert(&self, item: impl Into<RegistryItem>) -> crate::Result<()> {
         self.raise_mutable()?;
         let item = item.into();
@@ -301,6 +327,8 @@ impl Registry {
         Ok(())
     }
 
+    /// Removes a [RegistryItem] by [Id] from the registry
+    /// Attempting to remove an [`Id::Special`] is a no-op
     pub fn remove(&self, id: impl Into<String>) -> crate::Result<()> {
         self.raise_mutable()?;
         let id = Id::try_from(Into::<String>::into(id))?;
@@ -325,6 +353,7 @@ impl Registry {
         Ok(())
     }
 
+    /// Saves this registry to disk
     pub fn save(&self) -> crate::Result<()> {
         self.raise_mutable()?;
         let target = self.asset_pack.path().join("registry.json");
@@ -448,7 +477,7 @@ impl Registry {
     pub async fn from_file(path: impl AsRef<Path>) -> crate::Result<Self> {
         let path = path.as_ref().to_path_buf();
         let cloned_path = path.clone();
-        match tokio::task::spawn_blocking(move || Self::_open_file_internal(cloned_path))
+        match crate::tokio::task::spawn_blocking(move || Self::_open_file_internal(cloned_path))
             .await
             .unwrap()
         {
@@ -474,7 +503,7 @@ impl Registry {
     pub async fn from_url(url: impl Into<String>) -> crate::Result<Self> {
         let url = url.into();
         let cloned_url = url.clone();
-        match tokio::task::spawn_blocking(move || Self::_open_url_internal(cloned_url))
+        match crate::tokio::task::spawn_blocking(move || Self::_open_url_internal(cloned_url))
             .await
             .unwrap()
         {

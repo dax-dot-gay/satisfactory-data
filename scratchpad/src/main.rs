@@ -1,20 +1,3 @@
-# satisfactory-data
-Rust crate and associated binary tool to extract and parse Satisfactory game files
-
-### Installation
-
-```bash
-cargo add satisfactory-data [-F async] [-F specta-1]/[-F specta-2] [-F schemars]
-```
-
-**Feature Flags:**
-
-- `async`: Allows asynchronous registry loading
-- `specta-1`/`specta-2`: Mutually exclusive, derives `specta::Type` on this crate's types.
-- `schemars`: Derives `schemars::JsonSchema` on this crate's types
-
-### Example Usage
-```rust
 use std::error::Error;
 
 use satisfactory_data::Registry;
@@ -38,4 +21,3 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
-```
