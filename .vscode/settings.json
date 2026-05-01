@@ -12,5 +12,6 @@
         }
       }
     }
-  }
+  },
+  "rustdocstring.includeExamples": false
 }

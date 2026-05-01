@@ -40,6 +40,8 @@ pub enum DescriptionPowerConsumption {
 pub struct DescriptionItem {
     pub id: Id,
     pub description_type: DescriptionType,
+    #[serde(default)]
+    pub custom: bool,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]

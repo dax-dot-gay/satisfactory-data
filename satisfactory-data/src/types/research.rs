@@ -78,6 +78,8 @@ pub enum ResearchType {
 pub struct ResearchItem {
     pub id: Id,
     pub display_name: String,
+    #[serde(default)]
+    pub custom: bool,
     pub description: String,
     pub research_type: ResearchType,
     pub cost: Vec<ResearchCost>,

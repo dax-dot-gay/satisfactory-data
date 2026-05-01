@@ -24,6 +24,8 @@ pub struct BuildableItem {
     pub id: Id,
     pub display_name: String,
     pub description: String,
+    #[serde(default)]
+    pub custom: bool,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]

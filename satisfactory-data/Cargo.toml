@@ -14,8 +14,16 @@ chrono = { version = "0.4.44", features = ["serde"] }
 anyhow = "1.0.102"
 thiserror = "2.0.18"
 getset = "0.1.6"
+parking_lot = { version = "0.12.5", features = ["serde", "send_guard", "arc_lock"] }
+tempfile = "3.27.0"
+zip = { version = "8.6.0", features = ["bzip2"] }
+reqwest = { version = "0.13.3", features = ["json", "stream", "blocking"] }
+log = { version = "0.4.29", features = ["serde", "std"] }
+tokio = { version = "1.52.1", features = ["rt"], optional = true }
+glob = "0.3.3"
 
 [features]
-default = ["specta-2"]
+default = []
+async = ["dep:tokio"]
 specta-1 = ["dep:specta_01"]
 specta-2 = ["dep:specta_02"]

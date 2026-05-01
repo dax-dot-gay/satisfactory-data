@@ -136,6 +136,7 @@ fn clean_research(item: raw::ResearchItem) -> clean::ResearchItem {
             None => Vec::new(),
         },
         tier: item.tier.and_then(|v| Some(v.into())).unwrap_or(0),
+        custom: false
     }
 }
 
@@ -174,6 +175,7 @@ fn clean_recipe(item: raw::RecipeItem) -> clean::RecipeItem {
                 }
             })
             .collect(),
+        custom: false
     }
 }
 
@@ -231,6 +233,7 @@ fn clean_description(item: raw::DescriptionItem) -> clean::DescriptionItem {
             .resource_sink_points
             .clone()
             .and_then(|v| Some(v.into())),
+        custom: false
     }
 }
 
@@ -272,6 +275,7 @@ fn clean_buildable(item: raw::BuildingItem) -> clean::BuildableItem {
         is_patternable: item.can_pattern.clone().and_then(|v| Some(v.into())),
         is_colorable: item.can_color.clone().and_then(|v| Some(v.into())),
         is_interactable: item.interactable.clone().and_then(|v| Some(v.into())),
+        custom: false
     }
 }
 

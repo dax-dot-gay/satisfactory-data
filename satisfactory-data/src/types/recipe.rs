@@ -21,6 +21,8 @@ pub enum RecipeMachine {
 pub struct RecipeItem {
     pub id: Id,
     pub display_name: String,
+    #[serde(default)]
+    pub custom: bool,
     pub inputs: Vec<RecipeResource>,
     pub outputs: Vec<RecipeResource>,
     pub duration: f32,

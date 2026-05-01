@@ -171,6 +171,8 @@ impl Display for IdKind {
 
 #[model(CloneGetters, PartialEq, Eq, Hash)]
 #[serde(try_from = "String", into = "String")]
+#[cfg_attr(feature = "specta-1", specta(type = ::std::string::String))]
+#[cfg_attr(feature = "specta-2", specta(type = ::std::string::String))]
 #[getset(get_clone = "pub")]
 pub struct Id {
     kind: IdKind,
