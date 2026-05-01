@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use specta::Type;
 
 use super::{Coercion, NormalizedString, AssetReference};
+use satisfactory_data::types::description as clean;
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Type)]
 #[serde(rename_all = "snake_case")]
@@ -17,6 +18,17 @@ pub enum DescriptionType {
 
     #[serde(alias = "RF_INVALID")]
     Building,
+}
+
+impl Into<clean::DescriptionType> for DescriptionType {
+    fn into(self) -> clean::DescriptionType {
+        match self {
+            DescriptionType::Liquid => satisfactory_data::types::description::DescriptionType::Liquid,
+            DescriptionType::Item => clean::DescriptionType::Item,
+            DescriptionType::Gas => clean::DescriptionType::Gas,
+            DescriptionType::Building => clean::DescriptionType::Building,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Type)]
@@ -42,6 +54,19 @@ pub enum DescriptionStackSize {
     Huge,
 }
 
+impl Into<clean::DescriptionStackSize> for DescriptionStackSize {
+    fn into(self) -> clean::DescriptionStackSize {
+        match self {
+            DescriptionStackSize::Liquid => clean::DescriptionStackSize::Liquid,
+            DescriptionStackSize::One => clean::DescriptionStackSize::One,
+            DescriptionStackSize::Small => clean::DescriptionStackSize::Small,
+            DescriptionStackSize::Medium => clean::DescriptionStackSize::Medium,
+            DescriptionStackSize::Large => clean::DescriptionStackSize::Large,
+            DescriptionStackSize::Huge => clean::DescriptionStackSize::Huge,
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Type)]
 #[serde(rename_all = "snake_case")]
 pub enum DescriptionGasType {
@@ -50,6 +75,15 @@ pub enum DescriptionGasType {
 
     #[serde(alias = "GT_ENERGY")] // Energetic gas
     Energy
+}
+
+impl Into<clean::DescriptionGasType> for DescriptionGasType {
+    fn into(self) -> clean::DescriptionGasType {
+        match self {
+            DescriptionGasType::Normal => clean::DescriptionGasType::Normal,
+            DescriptionGasType::Energy => clean::DescriptionGasType::Energy,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq, Type)]

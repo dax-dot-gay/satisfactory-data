@@ -15,6 +15,7 @@ pub enum DescriptionStackSize {
     One,
     Small,
     Medium,
+    Large,
     Huge,
     Liquid,
 }

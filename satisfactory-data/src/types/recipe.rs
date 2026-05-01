@@ -15,19 +15,6 @@ pub enum RecipeMachine {
     Machine { id: String },
 }
 
-impl From<String> for RecipeMachine {
-    fn from(value: String) -> Self {
-        match value.as_str() {
-            "BpWorkBenchComponentC" | "FgBuildableAutomatedWorkBench" => Self::HubWorkbench {},
-            "BpBuildGunC" | "FgBuildGun" => Self::BuildGun {},
-            "BpWorkshopComponentC" => Self::EquipmentWorkshop {},
-            machine => Self::Machine {
-                id: machine.to_string(),
-            },
-        }
-    }
-}
-
 #[model]
 pub struct RecipeItem {
     pub id: String,
