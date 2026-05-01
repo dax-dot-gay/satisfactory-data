@@ -143,24 +143,37 @@ fn clean_recipe(item: raw::RecipeItem) -> clean::RecipeItem {
     clean::RecipeItem {
         id: clean_id(item.id.clone()),
         display_name: item.display_name.clone(),
-        inputs: extract_ue(item.ingredients.clone()).into_iter().map(|v| clean::recipe::RecipeResource {
-            item: clean_id(v.item.clone()),
-            amount: v.amount.into()
-        }).collect(),
-        outputs: extract_ue(item.product.clone()).into_iter().map(|v| clean::recipe::RecipeResource {
-            item: clean_id(v.item.clone()),
-            amount: v.amount.into()
-        }).collect(),
+        inputs: extract_ue(item.ingredients.clone())
+            .into_iter()
+            .map(|v| clean::recipe::RecipeResource {
+                item: clean_id(v.item.clone()),
+                amount: v.amount.into(),
+            })
+            .collect(),
+        outputs: extract_ue(item.product.clone())
+            .into_iter()
+            .map(|v| clean::recipe::RecipeResource {
+                item: clean_id(v.item.clone()),
+                amount: v.amount.into(),
+            })
+            .collect(),
         duration: item.duration.clone().into(),
-        machines: extract_ue(item.machine.clone()).into_iter().map(|v| {
-            let mid: String = v.into();
-            match mid.as_str() {
-                "BpWorkBenchComponentC" | "FgBuildableAutomatedWorkBench" => clean::recipe::RecipeMachine::HubWorkbench {  },
-                "BpBuildGunC" | "FgBuildGun" => clean::recipe::RecipeMachine::BuildGun {  },
-                "BpWorkshopComponentC" => clean::recipe::RecipeMachine::EquipmentWorkshop {  },
-                machine => clean::recipe::RecipeMachine::Machine { id: clean_id(machine) }
-            }
-        }).collect(),
+        machines: extract_ue(item.machine.clone())
+            .into_iter()
+            .map(|v| {
+                let mid: String = v.into();
+                match mid.as_str() {
+                    "BpWorkBenchComponentC" | "FgBuildableAutomatedWorkBench" => {
+                        clean::recipe::RecipeMachine::HubWorkbench {}
+                    }
+                    "BpBuildGunC" | "FgBuildGun" => clean::recipe::RecipeMachine::BuildGun {},
+                    "BpWorkshopComponentC" => clean::recipe::RecipeMachine::EquipmentWorkshop {},
+                    machine => clean::recipe::RecipeMachine::Machine {
+                        id: clean_id(machine),
+                    },
+                }
+            })
+            .collect(),
     }
 }
 
@@ -168,30 +181,97 @@ fn clean_description(item: raw::DescriptionItem) -> clean::DescriptionItem {
     clean::DescriptionItem {
         id: clean_id(item.id.clone()),
         description_type: item.description_type.clone().into(),
-        display_name: if item.display_name.is_empty() {None} else {Some(item.display_name.clone())},
-        description:  if item.description.is_empty() {None} else {Some(item.description.clone())},
+        display_name: if item.display_name.is_empty() {
+            None
+        } else {
+            Some(item.display_name.clone())
+        },
+        description: if item.description.is_empty() {
+            None
+        } else {
+            Some(item.description.clone())
+        },
         stack_size: item.stack_size.clone().and_then(|v| Some(v.into())),
         gas_type: item.gas_type.clone().and_then(|v| Some(v.into())),
         is_alien: item.is_alien.and_then(|v| Some(v.into())),
         energy_value: item.energy_value.and_then(|v| Some(v.into())),
         radioactivity: item.radioactivity.and_then(|v| Some(v.into())),
         health_gain: item.health_gain.and_then(|v| Some(v.into())),
-        power_consumption: item.power_consumption.clone().and_then(|v| Some(match v {
-            raw::Coercion::Float(v) => clean::description::DescriptionPowerConsumption::Static { amount: v },
-            raw::Coercion::Integer(v) => clean::description::DescriptionPowerConsumption::Static { amount: v as f32 },
-            raw::Coercion::String(Some(content)) => {
-                if let Some((min, max)) = content.trim_matches(['(', ')']).split_once(",") {
-                    clean::description::DescriptionPowerConsumption::Variable { min: min.split_once("=").and_then(|(_, v)| Some(v.parse::<f32>().unwrap_or(0.0))).unwrap_or(0.0), max: max.split_once("=").and_then(|(_, v)| Some(v.parse::<f32>().unwrap_or(0.0))).unwrap_or(0.0) }
-                } else {
-                    clean::description::DescriptionPowerConsumption::Static { amount: 0.0 }
+        power_consumption: item.power_consumption.clone().and_then(|v| {
+            Some(match v {
+                raw::Coercion::Float(v) => {
+                    clean::description::DescriptionPowerConsumption::Static { amount: v }
                 }
-            },
-            _ => clean::description::DescriptionPowerConsumption::Static { amount: 0.0 }
-        })),
+                raw::Coercion::Integer(v) => {
+                    clean::description::DescriptionPowerConsumption::Static { amount: v as f32 }
+                }
+                raw::Coercion::String(Some(content)) => {
+                    if let Some((min, max)) = content.trim_matches(['(', ')']).split_once(",") {
+                        clean::description::DescriptionPowerConsumption::Variable {
+                            min: min
+                                .split_once("=")
+                                .and_then(|(_, v)| Some(v.parse::<f32>().unwrap_or(0.0)))
+                                .unwrap_or(0.0),
+                            max: max
+                                .split_once("=")
+                                .and_then(|(_, v)| Some(v.parse::<f32>().unwrap_or(0.0)))
+                                .unwrap_or(0.0),
+                        }
+                    } else {
+                        clean::description::DescriptionPowerConsumption::Static { amount: 0.0 }
+                    }
+                }
+                _ => clean::description::DescriptionPowerConsumption::Static { amount: 0.0 },
+            })
+        }),
         icon: item.icon.and_then(|v| v.asset_id),
         big_icon: item.big_icon.and_then(|v| v.asset_id),
         generated_waste: item.generated_waste.clone().and_then(|v| Some(v.into())),
-        resource_sink_points: item.resource_sink_points.clone().and_then(|v| Some(v.into())),
+        resource_sink_points: item
+            .resource_sink_points
+            .clone()
+            .and_then(|v| Some(v.into())),
+    }
+}
+
+fn clean_buildable(item: raw::BuildingItem) -> clean::BuildableItem {
+    clean::BuildableItem {
+        id: clean_id(item.id.clone()),
+        display_name: item.display_name.clone(),
+        description: item.description.clone(),
+        is_adaptive_generator: item.adaptive_generator.clone().and_then(|v| Some(v.into())),
+        fuels: item.fuels.clone().and_then(|fuels| Some(fuels.into_iter().map(|fuel| clean::buildable::BuildableFuelType {
+            primary_resource: clean_id(fuel.primary_resource.clone()),
+            secondary_resource: fuel.secondary_resource.clone().and_then(|v| {
+                let vs: String = v.into();
+                if vs.is_empty() {
+                    None
+                } else {
+                    Some(clean_id(vs))
+                }
+            }),
+            byproduct_resource: fuel.byproduct_resource.clone().and_then(|v| {
+                let vs: String = v.into();
+                if vs.is_empty() {
+                    None
+                } else {
+                    Some(clean_id(vs))
+                }
+            }),
+            byproduct_amount: fuel.byproduct_amount.and_then(|v| Some(v.into())),
+        }).collect())).unwrap_or(Vec::new()),
+        power_production: item.power_production.clone().and_then(|v| Some(v.into())),
+        power_consumption: item.power_consumption.clone().and_then(|v| Some(v.into())),
+        power_consumption_exponent: item.power_consumption_exponent.clone().and_then(|v| Some(v.into())),
+        power_consumption_boost: item.power_consumption_boost.clone().and_then(|v| Some(v.into())),
+        power_consumption_minimum: item.power_consumption_minimum.clone().and_then(|v| Some(v.into())),
+        power_consumption_maximum: item.power_consumption_maximum.clone().and_then(|v| Some(v.into())),
+        is_overclockable: item.overclockable.clone().and_then(|v| Some(v.into())),
+        is_boostable: item.boostable.clone().and_then(|v| Some(v.into())),
+        is_sinkable: item.sinkable.clone().and_then(|v| Some(v.into())),
+        is_patternable: item.can_pattern.clone().and_then(|v| Some(v.into())),
+        is_colorable: item.can_color.clone().and_then(|v| Some(v.into())),
+        is_interactable: item.interactable.clone().and_then(|v| Some(v.into())),
     }
 }
 
@@ -216,6 +296,13 @@ pub fn generate_clean_data(data: Generated) -> RawRegistry {
         .clone()
         .into_iter()
         .map(|(id, item)| (clean_id(id), clean_description(item)))
+        .collect();
+
+    registry.buildables = data
+        .buildables
+        .clone()
+        .into_iter()
+        .map(|(id, item)| (clean_id(id), clean_buildable(item)))
         .collect();
 
     registry
