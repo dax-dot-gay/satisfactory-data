@@ -8,16 +8,16 @@ use serde::{Serialize, de::DeserializeOwned};
 
 use crate::types::satisfactory_raw::{self as raw, Generated, research::ResearchUnlock as RUnlock};
 
-fn clean_id(id: impl Into<String>) -> String {
+fn clean_id(id: impl Into<String>) -> clean::Id {
     let mut progress = id.into();
     progress = if progress.starts_with("Research") {
-        progress.replacen("Research", "research/", 1)
+        progress.replacen("Research", "research:default/", 1)
     } else if progress.starts_with("Schematic") {
         progress.replacen("Schematic", "research:schematic/", 1)
     } else if progress.starts_with("Desc") {
-        progress.replacen("Desc", "desc/", 1)
+        progress.replacen("Desc", "desc:default/", 1)
     } else if progress.starts_with("FoundationConcretePolished") {
-        ("desc/".to_string() + progress.as_str()).to_string()
+        ("desc:default/".to_string() + progress.as_str()).to_string()
     } else if progress.starts_with("BpEquipmentDescriptor") {
         progress.replacen("BpEquipmentDescriptor", "desc:equipment/", 1)
     } else if progress.starts_with("BpEqDesc") {
@@ -49,7 +49,7 @@ fn clean_id(id: impl Into<String>) -> String {
         progress.truncate(progress.len() - 1);
     }
 
-    progress.to_case(Case::Snake)
+    clean::Id::try_from(progress.to_case(Case::Snake)).expect("Invalid id!")
 }
 
 fn extract_ue<T: Clone + Debug + Serialize + DeserializeOwned + PartialEq + Default>(
@@ -58,7 +58,7 @@ fn extract_ue<T: Clone + Debug + Serialize + DeserializeOwned + PartialEq + Defa
     return AsRef::<Option<T>>::as_ref(&ue).clone().unwrap_or_default();
 }
 
-fn extract_crs(crs: raw::uestring::UE<Vec<raw::utility::ClassReference>>) -> Vec<String> {
+fn extract_crs(crs: raw::uestring::UE<Vec<raw::utility::ClassReference>>) -> Vec<clean::Id> {
     return extract_ue(crs)
         .into_iter()
         .map(|v| clean_id(Into::<String>::into(v)))
@@ -281,28 +281,28 @@ pub fn generate_clean_data(data: Generated) -> RawRegistry {
         .research
         .clone()
         .into_iter()
-        .map(|(id, item)| (clean_id(id), clean_research(item)))
+        .map(|(id, item)| (clean_id(id).into(), clean_research(item)))
         .collect();
 
     registry.recipes = data
         .recipes
         .clone()
         .into_iter()
-        .map(|(id, item)| (clean_id(id), clean_recipe(item)))
+        .map(|(id, item)| (clean_id(id).into(), clean_recipe(item)))
         .collect();
 
     registry.descriptions = data
         .descriptions
         .clone()
         .into_iter()
-        .map(|(id, item)| (clean_id(id), clean_description(item)))
+        .map(|(id, item)| (clean_id(id).into(), clean_description(item)))
         .collect();
 
     registry.buildables = data
         .buildables
         .clone()
         .into_iter()
-        .map(|(id, item)| (clean_id(id), clean_buildable(item)))
+        .map(|(id, item)| (clean_id(id).into(), clean_buildable(item)))
         .collect();
 
     registry

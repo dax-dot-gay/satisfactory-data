@@ -1,15 +1,17 @@
 use satisfactory_data_macros::model;
 
+use crate::types::Id;
+
 #[model]
 pub struct ResearchCost {
-    pub item: String,
+    pub item: Id,
     pub amount: u64,
 }
 
 #[model]
 pub struct ScannableObjectType {
-    pub item: String,
-    pub allowed_scanners: Vec<String>,
+    pub item: Id,
+    pub allowed_scanners: Vec<Id>,
 }
 
 #[model]
@@ -17,15 +19,15 @@ pub struct ScannableObjectType {
 pub enum ResearchUnlock {
     Recipe {
         #[serde(default)]
-        recipes: Vec<String>,
+        recipes: Vec<Id>,
     },
     ScannableResource {
         #[serde(default)]
-        resources: Vec<String>,
+        resources: Vec<Id>,
     },
     Schematic {
         #[serde(default)]
-        schematics: Vec<String>,
+        schematics: Vec<Id>,
     },
     CentralStorageUpload {
         // This amount seems to be the amount of 1/25 second ticks needed per item
@@ -43,7 +45,7 @@ pub enum ResearchUnlock {
     },
     Emote {
         #[serde(default)]
-        emotes: Vec<String>,
+        emotes: Vec<Id>,
     },
     ScannableObject {
         #[serde(default, alias = "resources")]
@@ -51,7 +53,7 @@ pub enum ResearchUnlock {
     },
     BoomboxTape {
         #[serde(default)]
-        tapes: Vec<String>,
+        tapes: Vec<Id>,
     },
     Map {},
     Info {},
@@ -74,7 +76,7 @@ pub enum ResearchType {
 
 #[model]
 pub struct ResearchItem {
-    pub id: String,
+    pub id: Id,
     pub display_name: String,
     pub description: String,
     pub research_type: ResearchType,

@@ -1,16 +1,18 @@
 use satisfactory_data_macros::model;
 
+use crate::types::Id;
+
 #[model]
 pub struct BuildableFuelType {
-    pub primary_resource: String,
+    pub primary_resource: Id,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub secondary_resource: Option<String>,
+    pub secondary_resource: Option<Id>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
-    pub byproduct_resource: Option<String>,
+    pub byproduct_resource: Option<Id>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(any(feature = "specta-1", feature = "specta-2"), specta(optional))]
@@ -19,7 +21,7 @@ pub struct BuildableFuelType {
 
 #[model]
 pub struct BuildableItem {
-    pub id: String,
+    pub id: Id,
     pub display_name: String,
     pub description: String,
 

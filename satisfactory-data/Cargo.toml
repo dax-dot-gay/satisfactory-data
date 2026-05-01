@@ -11,6 +11,9 @@ satisfactory-data-macros.workspace = true
 specta_02 = { package = "specta", version = "2.0.0-rc.24", features = ["serde_json", "std", "derive", "chrono"], optional = true }
 specta_01 = { package = "specta", version = "1.0.5", features = ["serde", "typescript", "chrono"], optional = true }
 chrono = { version = "0.4.44", features = ["serde"] }
+anyhow = "1.0.102"
+thiserror = "2.0.18"
+getset = "0.1.6"
 
 [features]
 default = ["specta-2"]

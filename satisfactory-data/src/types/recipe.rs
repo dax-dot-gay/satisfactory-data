@@ -1,8 +1,10 @@
 use satisfactory_data_macros::model;
 
+use crate::types::Id;
+
 #[model]
 pub struct RecipeResource {
-    pub item: String,
+    pub item: Id,
     pub amount: u64,
 }
 
@@ -12,12 +14,12 @@ pub enum RecipeMachine {
     BuildGun {},
     HubWorkbench {},
     EquipmentWorkshop {},
-    Machine { id: String },
+    Machine { id: Id },
 }
 
 #[model]
 pub struct RecipeItem {
-    pub id: String,
+    pub id: Id,
     pub display_name: String,
     pub inputs: Vec<RecipeResource>,
     pub outputs: Vec<RecipeResource>,

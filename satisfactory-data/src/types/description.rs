@@ -1,5 +1,7 @@
 use satisfactory_data_macros::model;
 
+use crate::types::Id;
+
 #[model]
 #[serde(rename_all = "snake_case")]
 pub enum DescriptionType {
@@ -36,7 +38,7 @@ pub enum DescriptionPowerConsumption {
 
 #[model]
 pub struct DescriptionItem {
-    pub id: String,
+    pub id: Id,
     pub description_type: DescriptionType,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
