@@ -59,6 +59,8 @@ impl Platform {
     }
 
     pub fn publish(&self) -> () {
+        let _ = fs::remove_dir_all(Path::new(env!("CARGO_MANIFEST_DIR")).join("AExSidecar").join("bin"));
+        let _ = fs::remove_dir_all(Path::new(env!("CARGO_MANIFEST_DIR")).join("AExSidecar").join("obj"));
         fs::create_dir_all(
             Path::new(&env::var_os("OUT_DIR").unwrap())
                 .join("binaries")

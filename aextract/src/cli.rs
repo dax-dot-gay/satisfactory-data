@@ -18,6 +18,10 @@ pub struct Cli {
     #[arg(long = "game-version", alias = "gv")]
     pub game_version: String,
 
+    /// Indicate that the selected version is experimental
+    #[arg(long = "experimental")]
+    pub experimental_version: bool,
+
     /// Documentation locale to generate from
     #[arg(short, long, default_value = "en-US")]
     pub locale: String,
