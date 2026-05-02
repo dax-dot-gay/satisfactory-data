@@ -1,6 +1,6 @@
 [package]
 name = "satisfactory-data"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 license = "MIT"
 description = "Rust crate and associated binary tool to extract and parse Satisfactory game files"
@@ -15,8 +15,8 @@ convert_case = "0.11.0"
 serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.149"
 satisfactory-data-macros.workspace = true
-specta_02 = { package = "specta", version = "2.0.0-rc.22", features = ["serde_json", "std", "derive", "chrono"], optional = true }
-specta_01 = { package = "specta", version = "^1.0.5", features = ["serde", "typescript", "chrono"], optional = true }
+specta_02 = { package = "specta", version = "2.0.0-rc.22", features = ["derive", "chrono"], optional = true }
+specta_01 = { package = "specta", version = "^1.0.5", features = ["serde", "chrono"], optional = true }
 chrono = { version = "0.4.44", features = ["serde"] }
 anyhow = "1.0.102"
 thiserror = "2.0.18"
@@ -25,10 +25,10 @@ parking_lot = { version = "0.12.5", features = ["serde", "send_guard", "arc_lock
 tempfile = "3.27.0"
 zip = { version = "8.6.0", features = ["bzip2"] }
 reqwest = { version = "0.13.3", features = ["json", "stream", "blocking"] }
-log = { version = "0.4.29", features = ["serde", "std"] }
+log = { version = "0.4.29", features = ["serde"] }
 tokio = { version = "1.52.1", features = ["rt"], optional = true }
 glob = "0.3.3"
-schemars = { version = "1.2.1", features = ["std", "derive", "chrono04"], optional = true }
+schemars = { version = "1.2.1", features = ["derive", "chrono04"], optional = true }
 
 [features]
 default = []
